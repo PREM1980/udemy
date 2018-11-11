@@ -13,7 +13,8 @@ class Test(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.app = UdemyApp(log_level=logging.WARNING)
+        pass
+#         cls.app = UdemyApp(log_level=logging.WARNING)
 
     def tearDown(self):
         pass
@@ -25,5 +26,4 @@ class Test(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
