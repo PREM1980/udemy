@@ -31,3 +31,6 @@ nosetests.xml
 
 # Translations
 *.mo
+
+# Eclipse file
+.settings
