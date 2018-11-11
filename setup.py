@@ -12,6 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/PREM1980/udemy",
+    keywords='',
     packages=setuptools.find_packages(),
     test_suite='nose.collector',
     tests_require=['nose'],
