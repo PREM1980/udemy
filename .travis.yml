@@ -10,7 +10,7 @@ after_success:
 notifications:
   email:
     recipients:
-      - prem1pre@example.com      
+      - prem1pre@gmail.com    
     on_success: never # default: change
     on_failure: always # default: always
 env:
