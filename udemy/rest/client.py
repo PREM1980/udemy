@@ -63,27 +63,32 @@ class Courses(object):
         self.api = api
         logger.debug("courses initialized")
 
-    def get_all(self):
-        print("I'm here")
-        logger.debug("courses initialized")
-        page = 1
-        per_page = 20
-
-        while True:
-            res = self.api.get_courses(page, per_page)
-            print 'res = ', res
+    def get_all(self, page, page_size):
+        # page = 1
+        # per_page = 20
+        no_of_page = 1
+        print('page = ', page)
+        print('page_size = ', page_size)
+        while True and page >= no_of_page:
+            
+            res = self._get_courses_detail(page, page_size)
+            # print(res)
             if not res['results']:
                 break
+            print('results = ', res['results'])
+            print('while loop results = ', len(res['results']))
+            for one in res['results']:
+                yield one
 
-            try:
-                for one in res['results']:
-                    print 'hello'
-                    yield one
-            except Exception  as e:
-                print(e)
-            break
+            no_of_page += 1
 
-        page += 1
+    def _get_courses_detail(self, page, page_size):
+        resource = "courses"
+        params = {'page': page, 'page_size': page_size,
+#                   'fields[course]': '@all'
+                  }
+        res = self.api.get(resource, params)
+        return res
 
 
 class ApiClient(object):
@@ -216,11 +221,11 @@ class ApiClient(object):
     
           logger.debug("%s %s\nHEADERS:\n%s\nPAYLOAD:\n%s", method, url,
                        pformat(self.headers), pformat(params))
-    
+          print('url = {0}  , params = {1}, headers = {2}'.format(url, params, self.headers))
           if method == 'GET':
 #             headers = {
 #                 'Content-Type': 'application/json',
-#                 'X-Clarifai-Client': 'python:%s' % CLIENT_VERSION,
+#                 'X-Udemy-Client': 'python:%s' % CLIENT_VERSION,
 #                 'Python-Client': '%s:%s' % (OS_VER, PYTHON_VERSION),
 #                 'Authorization': self.headers['Authorization']
 #             }            
@@ -228,7 +233,7 @@ class ApiClient(object):
           elif method == "POST":
 #             headers = {
 #                 'Content-Type': 'application/json',
-#                 'X-Clarifai-Client': 'python:%s' % CLIENT_VERSION,
+#                 'X-Udemy-Client': 'python:%s' % CLIENT_VERSION,
 #                 'Python-Client': '%s:%s' % (OS_VER, PYTHON_VERSION),
 #                 'Authorization': self.headers['Authorization']
 #             }
@@ -236,19 +241,11 @@ class ApiClient(object):
           elif method == "DELETE":
 #             headers = {
 #                 'Content-Type': 'application/json',
-#                 'X-Clarifai-Client': 'python:%s' % CLIENT_VERSION,
+#                 'X-Udemy-Client': 'python:%s' % CLIENT_VERSION,
 #                 'Python-Client': '%s:%s' % (OS_VER, PYTHON_VERSION),
 #                 'Authorization': self.headers['Authorization']
 #             }
-            res = self.session.delete(url, data=json.dumps(params), headers=headers)
-          elif method == "PATCH":
-#             headers = {
-#                 'Content-Type': 'application/json',
-#                 'X-Clarifai-Client': 'python:%s' % CLIENT_VERSION,
-#                 'Python-Client': '%s:%s' % (OS_VER, PYTHON_VERSION),
-#                 'Authorization': self.headers['Authorization']
-#             }
-            res = self.session.patch(url, data=json.dumps(params), headers=headers)
+            res = self.session.delete(url, data=json.dumps(params), headers=headers)          
           else:
             raise UserError("Unsupported request type: '%s'" % method)
     
@@ -299,15 +296,62 @@ class ApiClient(object):
         return res.json()
 
     def get(self, resource, params=None, version="v2"):
-        """ Authorized get from Clarifai's API. """
+        """ Authorized get from Udemy's API. """
         return self._requester(resource, params, 'GET', version)
 
-    def get_courses(self, page, per_page):
-        resource = "courses"
-        params = {'page': page, 'per_page': per_page,
-#                   'fields[course]': '@all'
-                  }
 
-        res = self.get(resource, params)
-        return res
+class TokenError(Exception):
+  pass
+
+
+class ApiError(Exception):
+  """ API Server error """
+
+  def __init__(self, resource, params, method, response, api):
+    self.resource = resource
+    self.params = params
+    self.method = method
+    self.response = response
+    self.api = api
+
+    self.error_code = response.json().get('status', {}).get('code', None)
+    self.error_desc = response.json().get('status', {}).get('description', None)
+    self.error_details = response.json().get('status', {}).get('details', None)
+
+    current_ts_str = str(time.time())
+
+    msg = """%(method)s %(baseurl)s%(resource)s FAILED(%(time_ts)s). status_code: %(status_code)d, reason: %(reason)s, error_code: %(error_code)s, error_description: %(error_desc)s, error_details: %(error_details)s
+ >> Python client %(client_version)s with Python %(python_version)s on %(os_version)s
+ >> %(method)s %(baseurl)s%(resource)s
+ >> REQUEST(%(time_ts)s) %(request)s
+ >> RESPONSE(%(time_ts)s) %(response)s""" % {
+        'baseurl': '%s/v2/' % self.api.basev2,
+        'method': method,
+        'resource': resource,
+        'status_code': response.status_code,
+        'reason': response.reason,
+        'error_code': self.error_code,
+        'error_desc': self.error_desc,
+        'error_details': self.error_details,
+        'request': json.dumps(params, indent=2),
+        'response': json.dumps(response.json(), indent=2),
+        'time_ts': current_ts_str,
+        'client_version': CLIENT_VERSION,
+        'python_version': PYTHON_VERSION,
+        'os_version': OS_VER
+    }
+
+    super(ApiError, self).__init__(msg)
+
+    # def __str__(self):
+    #   parent_str = super(ApiError, self).__str__()
+    #   return parent_str + str(self.json)
+
+
+class ApiClientError(Exception):
+  """ API Client Error """
+
+
+class UserError(Exception):
+  """ User Error """        
 
