@@ -7,6 +7,12 @@ script:
 - nosetests --with-coverage --cover-inclusive --cover-package=udemy
 after_success:
 - coveralls
+notifications:
+  email:
+    recipients:
+      - prem1pre@example.com      
+    on_success: never # default: change
+    on_failure: always # default: always
 env:
   global:
   - secure: gsKoFARmHrqzlNYI0hALP6Vy4J4NYYsOOjVdoCTNKS4RSdVGu4QrKFzTB70UI9fSpW5YmTygnt54laKSRalitug0IImZIUFyoGGRULy5c5rAvVxpEaW6MOgzQCXwn5aYJp2t1/i7VR8SQKVCqIHLpJX3PbqQ1JxqlHbHZZKZRyZ1Gf8zUb3LVVbyjOLdW7bbHA7MW8tw0ZpMTPiELvilumFohTCzLoXZsEvTrOy50ADqta4fmYMtQ7PeRAIxzOHu6wcfvfH7iYNQOgtB/sekg/5OzX8nzER7KAz6KQnzSF8wdgGSeY3VJ0tQLgIDeAHONofjhi8LpPukavsPrYnug2M4uLsnC4q0IIep7h6MkzAWkVl57fSoGTYVLuUR7kIGKSGm29/bxIMMiOXSjKy8JXR/MJknO1QfbtaDl4dZD560s8wgHbpUnrfObrsgvwrJ3uFmdm22rVWJep+LWTAxNjJxGtPFw6zZSvbKY1m2SowqQpoXmhyApiO3Fh9wGXUT/wQA+pt4hCjxX6bxJogQHymuMpYaoj1L6rTl6+7rVgixQdig3IY3uinqzz21XMrTFgw+jKmVabhKqrJn/MdLddE4bpKRBkd5RPMIRfOsXKexuQPQ0nL86XbhdOBb4X+jhW+W+9aS3CUFN7d1nfQ9N89lU7LluLld77Q53lgA3xo=
