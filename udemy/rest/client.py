@@ -60,25 +60,18 @@ class Courses(object):
     """
 
     def __init__(self, api):
-        self.api = api
-        logger.debug("courses initialized")
+        self.api = api        
 
-    def get_all(self, page, page_size):
-        # page = 1
-        # per_page = 20
-        no_of_page = 1
-        print('page = ', page)
-        print('page_size = ', page_size)
+    def get_all(self, page, page_size):        
+        no_of_page = 1        
         while True and page >= no_of_page:
             
-            res = self._get_courses_detail(page, page_size)
-            # print(res)
+            res = self._get_courses_detail(page, page_size)            
             if not res['results']:
-                break
-            print('results = ', res['results'])
-            print('while loop results = ', len(res['results']))
-            for one in res['results']:
-                yield one
+                break            
+            for one in res['results']:                
+                course = self._to_obj(one)
+                yield course
 
             no_of_page += 1
 
@@ -90,6 +83,8 @@ class Courses(object):
         res = self.api.get(resource, params)
         return res
 
+    def _to_obj(self, item):
+        return Course(item)
 
 class ApiClient(object):
     """
@@ -178,7 +173,7 @@ class ApiClient(object):
         """
 
 #     self._check_token()
-        url = urljoin(self.basev2, resource)
+        url = urljoin(self.basev2, resource)        
     
         # only retry under when status_code is non-200, under max-tries
         # and under some circumstances
@@ -190,38 +185,9 @@ class ApiClient(object):
         while status_code != 200 and attempts > 0 and retry is True:
     
           logger.debug("=" * 100)
-    
-    #       # mangle the base64 because it is too long
-    #       if params and params.get('inputs') and len(params['inputs']) > 0:
-    #         params_copy = copy.deepcopy(params)
-    #         for data in params_copy['inputs']:
-    #           data = data['data']
-    #           if data.get('image') and data['image'].get('base64'):
-    #             base64_bytes = data['image']['base64'][:10] + '......' + data['image']['base64'][-10:]
-    #             data['image']['base64'] = base64_bytes
-    #           if data.get('video') and data['video'].get('base64'):
-    #             base64_bytes = data['video']['base64'][:10] + '......' + data['video']['base64'][-10:]
-    #             data['video']['base64'] = base64_bytes
-    #       elif params and params.get('query') and params['query'].get('ands'):
-    #         params_copy = copy.deepcopy(params)
-    # 
-    #         queries = params_copy['query']['ands']
-    # 
-    #         for query in queries:
-    #           if query.get('output') and query['output'].get('input') and \
-    #               query['output']['input'].get('data') and \
-    #               query['output']['input']['data'].get('image') and \
-    #               query['output']['input']['data']['image'].get('base64'):
-    #             data = query['output']['input']['data']
-    #             base64_bytes = data['image']['base64'][:10] + '......' + data['image']['base64'][-10:]
-    #             data['image']['base64'] = base64_bytes
-    #       else:
-    #         params_copy = params
-          # mangle the base64 because it is too long
-    
+        
           logger.debug("%s %s\nHEADERS:\n%s\nPAYLOAD:\n%s", method, url,
-                       pformat(self.headers), pformat(params))
-          print('url = {0}  , params = {1}, headers = {2}'.format(url, params, self.headers))
+                       pformat(self.headers), pformat(params))          
           if method == 'GET':
 #             headers = {
 #                 'Content-Type': 'application/json',
@@ -258,7 +224,7 @@ class ApiClient(object):
 
           logger.debug("\nRESULT:\n%s", pformat(json.loads(res.content.decode('utf-8'))))
     
-          status_code = res.status_code
+          status_code = res.status_code          
           attempts -= 1
     
           # allow retry when token expires
@@ -298,6 +264,51 @@ class ApiClient(object):
     def get(self, resource, params=None, version="v2"):
         """ Authorized get from Udemy's API. """
         return self._requester(resource, params, 'GET', version)
+
+
+
+class Course(object):
+    def __init__(self, item=None):        
+        self._class = item['_class']
+        self.id = item['id']        
+        self.title = item['title']
+        self.url = item['url']
+        self.is_paid = item['is_paid']
+        self.price = item['price']
+        self.price_detail = PriceDetail(item=item['price_detail'])
+        self.visible_instructors = []
+        for each in item['visible_instructors']:
+          self.visible_instructors.append(Instructor(item=each))     
+        self.image_125_H = item['image_125_H']             
+        self.image_240x135 = item['image_240x135']
+        self.is_practice_test_course = item['is_practice_test_course']
+        self.image_480x270 = item['image_480x270']
+        self.published_title = item['published_title']
+        self.predictive_score = item['predictive_score']
+        self.relevancy_score = item['relevancy_score']
+        self.input_features = item['input_features']                                
+        self.lecture_search_result = item['lecture_search_result']        
+
+
+class Instructor(object):
+    def __init__(self, item=None):
+        self.name = item['name']
+        self.url = item['url']
+        self.display_name = item['display_name']        
+        self.image_50x50 = item['image_50x50']
+        self.initials = item['initials']
+        self._class = item['_class']
+        self.job_title = item['job_title']
+        self.image_100x100 = item['image_100x100']        
+        self.title = item['title']                                        
+
+
+class PriceDetail(object):
+    def __init__(self, item):
+        self.price_string = None
+        self.amount = None
+        self.currency_symbol = None
+        self.currency = None
 
 
 class TokenError(Exception):
