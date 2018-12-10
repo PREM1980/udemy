@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/PREM1980/udemy.svg?branch=master)](https://travis-ci.org/PREM1980/udemy)
+[![Coverage Status](https://coveralls.io/repos/github/PREM1980/udemy/badge.svg?branch=master)](https://coveralls.io/github/PREM1980/udemy?branch=master)
 
 
 # Udemy app
