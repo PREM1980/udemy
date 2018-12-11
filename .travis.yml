@@ -10,9 +10,17 @@ after_success:
 notifications:
   email:
     recipients:
-      - prem1pre@gmail.com    
-    on_success: always # default: change
-    on_failure: always # default: always
+    - prem1pre@gmail.com
+    on_success: always
+    on_failure: always
+deploy:
+  provider: pypi
+  user: premlaks
+#  password:
+#    secure: L0557Q3R6qajq9L34+iq03j1vLmxk+jFi+PNWUcsCTdrSRnLlGT/tOfPCt6N+qVLjXp3ja6EE7CTtVtShSyMpYjw4bpbn8BCt/YvuqksrbFRHf7xOzTYH71ZlGNLSfGN28PXnliXEXW3eNfqgj7js9vk9cAiDq8LaVVP8HebSm5mScVX+3cWIi4i5ulzz2c+6I3lQtrj1llz0CxrLLSJAviHMM+Mh7XRpzVXJjPLx2u6O+OHpdvqkbbFHUbCJU9zN8RQsgDMLRb4RdtUlXs8mP0AOGDdM6bk57l1uXpFOdE2K35e0SpzsYz6+9XE5O05JBbWQBzZrH7MWL5Lfio5RV7MxjD4qxILCUuKevYnWujGx9T+rc8lw1OrnswDs7eMn5c5dTEu/v6UrcwBNYTOzEjD36HR+VlfwOwT4a/0LjojEnn2aftZSVqMQYTWohO+at5DRRWmcF8q5k/PUHjwPqshsuioqiy3bDpgyxIEiOhOUxgyoAhUN7k/a6xhp8F0R35tavMjIgEpfEsJ0qL985GPUXEo9rFZsP3Vzu2JibK2liYmLP/Ge7E+gQ4DILfaM6dnsewkgxu7x9XMmNSe6t8R5bdNBaE1J6gBuXZOumhKpzH0sl0lEjph0iJ8eyykDd97D/3iqrE5d2xPcMY42L22C7weOsuOAFVpV5/x5eE=
+  on:
+    tags: true
+  distributions: "sdist bdist_wheel"
 env:
   global:
   - secure: gsKoFARmHrqzlNYI0hALP6Vy4J4NYYsOOjVdoCTNKS4RSdVGu4QrKFzTB70UI9fSpW5YmTygnt54laKSRalitug0IImZIUFyoGGRULy5c5rAvVxpEaW6MOgzQCXwn5aYJp2t1/i7VR8SQKVCqIHLpJX3PbqQ1JxqlHbHZZKZRyZ1Gf8zUb3LVVbyjOLdW7bbHA7MW8tw0ZpMTPiELvilumFohTCzLoXZsEvTrOy50ADqta4fmYMtQ7PeRAIxzOHu6wcfvfH7iYNQOgtB/sekg/5OzX8nzER7KAz6KQnzSF8wdgGSeY3VJ0tQLgIDeAHONofjhi8LpPukavsPrYnug2M4uLsnC4q0IIep7h6MkzAWkVl57fSoGTYVLuUR7kIGKSGm29/bxIMMiOXSjKy8JXR/MJknO1QfbtaDl4dZD560s8wgHbpUnrfObrsgvwrJ3uFmdm22rVWJep+LWTAxNjJxGtPFw6zZSvbKY1m2SowqQpoXmhyApiO3Fh9wGXUT/wQA+pt4hCjxX6bxJogQHymuMpYaoj1L6rTl6+7rVgixQdig3IY3uinqzz21XMrTFgw+jKmVabhKqrJn/MdLddE4bpKRBkd5RPMIRfOsXKexuQPQ0nL86XbhdOBb4X+jhW+W+9aS3CUFN7d1nfQ9N89lU7LluLld77Q53lgA3xo=
